@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 12: Engine Cross-Section</title>
+<style>
+  body {
+    margin: 0; overflow: hidden; background-color: #0c1015;
+    background-image: radial-gradient(#374151 1px, transparent 1px);
+    background-size: 20px 20px; font-family: "Courier New", monospace;
+    color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh;
+  }
+  .schematic { width: 300px; height: 400px; position: relative; }
+  svg { width: 100%; height: 100%; }
+  .line {
+    fill: none; stroke: #F3F4F6; stroke-width: 2;
+    stroke-dasharray: 1500; stroke-dashoffset: 1500;
+    animation: draw 2s ease-out forwards;
+  }
+  .sub-line { stroke: #9CA3AF; stroke-width: 1; stroke-dasharray: 1500; stroke-dashoffset: 1500; animation: draw 2s 1s ease-out forwards; }
+  .measure { stroke: #F59E0B; stroke-width: 1; stroke-dasharray: 5 5; opacity: 0; animation: fadeIn 0.5s 2.5s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fadeIn { to { opacity: 1; } }
+  
+  .data-readout {
+    position: absolute; right: -120px; top: 100px;
+    font-size: 12px; color: #F59E0B; opacity: 0; animation: fadeIn 0.5s 2.5s forwards;
+  }
+</style>
+</head>
+<body>
+  <div class="schematic">
+    <svg viewBox="0 0 300 400">
+      <!-- Engine Bell Outline -->
+      <path class="line" d="M 100 50 L 200 50 L 180 150 C 180 200 230 300 250 350 L 50 350 C 70 300 120 200 120 150 Z" />
+      
+      <!-- Internal Injector Plate -->
+      <path class="sub-line" d="M 100 65 L 200 65 M 100 80 L 200 80" />
+      
+      <!-- Thrust vectors -->
+      <path class="sub-line" d="M 150 80 L 150 150 M 130 80 L 135 140 M 170 80 L 165 140" style="stroke-dasharray: 4 4;" />
+      
+      <!-- Measurement lines -->
+      <line class="measure" x1="10" y1="350" x2="290" y2="350" />
+      <line class="measure" x1="10" y1="50" x2="290" y2="50" />
+      <line class="measure" x1="270" y1="50" x2="270" y2="350" />
+    </svg>
+    <div class="data-readout">
+      DIAMETER: 2.5m<br>
+      CHAMBER PR: 250 bar<br>
+      STATUS: VERIFIED
+    </div>
+  </div>
+</body>
+</html>

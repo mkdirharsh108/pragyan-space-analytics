@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo B: The Multi-Stage Detachment</title>
+<style>
+  body { margin: 0; overflow: hidden; background-color: #0c1015; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+  
+  .rocket-container {
+    width: 200px; height: 400px; position: relative; z-index: 10;
+    will-change: transform;
+    animation: launch-in 1s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+  }
+
+  .stage-1 { /* Booster */
+    transform-origin: top center;
+    animation: drop-booster 2s 2s cubic-bezier(0.5, 0, 1, 1) forwards;
+  }
+
+  .stage-2 { /* Capsule */
+    animation: capsule-shoot 2s 2s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  }
+
+  .flame-1 { fill: #f97316; transform-origin: top center; animation: flame-flicker 0.1s infinite alternate, fade-flame 0.1s 2s forwards; }
+  .flame-2 { fill: #3b82f6; transform-origin: top center; opacity: 0; animation: ignite-flame-2 0.1s 2s forwards, flame-flicker 0.05s 2s infinite alternate; }
+
+  @keyframes launch-in {
+    0% { transform: translateY(100vh); }
+    100% { transform: translateY(0); }
+  }
+
+  @keyframes drop-booster {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  @keyframes capsule-shoot {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-150vh); }
+  }
+
+  @keyframes flame-flicker {
+    from { transform: scaleY(1); }
+    to { transform: scaleY(1.4); }
+  }
+
+  @keyframes fade-flame { to { opacity: 0; } }
+  @keyframes ignite-flame-2 { to { opacity: 1; } }
+</style>
+</head>
+<body>
+  <div class="rocket-container">
+    <svg viewBox="0 0 100 250" style="width: 100%; height: 100%;">
+      
+      <!-- Stage 2: Capsule -->
+      <g class="stage-2">
+        <path d="M 50 10 C 35 40 35 100 35 120 L 65 120 C 65 100 65 40 50 10 Z" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+        <circle cx="50" cy="60" r="6" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+        <circle cx="50" cy="90" r="6" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+        <!-- Stage 2 Engine -->
+        <path d="M 45 120 L 45 125 L 55 125 L 55 120" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+        <path class="flame-2" d="M 46 125 L 50 145 L 54 125 Z" />
+      </g>
+
+      <!-- Stage 1: Booster -->
+      <g class="stage-1">
+        <path d="M 35 120 L 35 140 L 20 170 L 35 170 L 35 180 L 65 180 L 65 170 L 80 170 L 65 140 L 65 120 Z" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+        <path d="M 40 180 L 40 195 L 60 195 L 60 180" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+        <path class="flame-1" d="M 42 195 L 50 230 L 58 195 Z" />
+      </g>
+
+    </svg>
+  </div>
+</body>
+</html>

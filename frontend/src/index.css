@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased selection:text-white;
+    color: #EEEEEE;
+    background-color: #000000; /* Absolute Pitch Black */
+    min-height: 100vh;
+  }
+  
+  body ::selection {
+    background-color: rgba(0, 255, 255, 0.4); /* Neon Cyan selection */
+  }
+
+  option {
+    background-color: #000000;
+    color: #00FFFF; /* Cyan options */
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-[#000000]/60 border border-[#00FFFF]/40 rounded-none transition-all duration-300 backdrop-blur-md shadow-[0_0_15px_rgba(0,255,255,0.1)];
+  }
+  .glass-panel {
+    @apply bg-[#000000]/60 border border-[#FF00FF]/40 rounded-none backdrop-blur-md shadow-[0_0_10px_rgba(255,0,255,0.1)];
+  }
+}
+
+/* Force normal font weight for Google Charts elements */
+.geomap-container svg text {
+  font-weight: 400 !important;
+  font-family: inherit !important;
+  stroke: none !important;
+}
+
+.google-visualization-tooltip * {
+  font-weight: 400 !important;
+  font-family: inherit !important;
+}
+
+/* Splash Screen Animations */
+.splash-stars {
+  position: absolute;
+  top: -100vh; left: 0; right: 0; height: 200vh;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: stars-fall 0.2s linear infinite, stars-opacity 4s forwards;
+  opacity: 0;
+  will-change: transform;
+}
+
+.splash-stars-2 {
+  background-size: 300px 300px;
+  animation: stars-fall 0.4s linear infinite, stars-opacity 4s forwards;
+  opacity: 0;
+}
+
+.splash-rocket-container {
+  will-change: transform;
+  animation: rocket-rumble 0.05s infinite alternate, rocket-launch 4s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+.splash-rocket, .splash-engine, .splash-window {
+  fill: none; 
+  stroke: #e5e7eb; 
+  stroke-width: 2;
+}
+
+.splash-flame {
+  fill: #f97316; /* Tailwind orange-500 */
+  transform-origin: top center;
+  animation: flame-flicker 0.05s infinite alternate;
+}
+
+@keyframes stars-fall {
+  from { transform: translateY(0); }
+  to { transform: translateY(200px); }
+}
+
+@keyframes stars-opacity {
+  0% { opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+@keyframes rocket-launch {
+  0% { transform: translateY(100vh); }
+  20% { transform: translateY(0); }
+  80% { transform: translateY(0); }
+  100% { transform: translateY(-100vh); }
+}
+
+@keyframes rocket-rumble {
+  from { margin-left: -2px; margin-top: -1px; }
+  to { margin-left: 2px; margin-top: 1px; }
+}
+
+@keyframes flame-flicker {
+  from { transform: scaleY(1); opacity: 0.8; }
+  to { transform: scaleY(2); opacity: 1; }
+}
+
+.splash-fade-out {
+  animation: splash-exit 0.8s ease-in-out forwards;
+}
+
+@keyframes splash-exit {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.3);
+}

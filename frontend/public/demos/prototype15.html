@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 15: Launch Vehicle Stack</title>
+<style>
+  body { margin: 0; background: #0B1120; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: -apple-system, sans-serif; overflow: hidden; }
+  .rocket { width: 60px; height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; position: relative; }
+  
+  .stage { width: 40px; border: 2px solid #38bdf8; background: transparent; opacity: 0; box-sizing: border-box; }
+  .s1 { height: 200px; border-bottom: none; animation: slideUp 0.5s 0.5s forwards; }
+  .s2 { height: 80px; border-bottom: none; animation: slideUp 0.5s 1s forwards; width: 40px; }
+  .fairing { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 60px solid #38bdf8; opacity: 0; animation: slideUp 0.5s 1.5s forwards; }
+  
+  @keyframes slideUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+  
+  .lines { position: absolute; height: 100%; width: 200px; display: flex; flex-direction: column; justify-content: space-between; padding-left: 80px; box-sizing: border-box; }
+  .l-text { color: #94A3B8; font-size: 10px; letter-spacing: 2px; opacity: 0; text-transform: uppercase; border-bottom: 1px dashed #334155; padding-bottom: 5px; }
+  .t1 { animation: slideUp 0.5s 0.7s forwards; margin-top: auto; margin-bottom: 100px; }
+  .t2 { animation: slideUp 0.5s 1.2s forwards; margin-bottom: 40px; }
+  .t3 { animation: slideUp 0.5s 1.7s forwards; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+  <div style="display: flex; position: relative;">
+    <div class="rocket">
+      <div class="fairing"></div>
+      <div class="stage s2"></div>
+      <div class="stage s1"></div>
+    </div>
+    <div class="lines">
+      <div class="l-text t3">Payload Fairing</div>
+      <div class="l-text t2">Second Stage</div>
+      <div class="l-text t1">First Stage Booster</div>
+    </div>
+  </div>
+</body>
+</html>

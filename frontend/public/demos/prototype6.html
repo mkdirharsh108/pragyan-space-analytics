@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 6: Launch Sequence</title>
+<style>
+  body {
+    margin: 0; background: #111; height: 100vh; color: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: "Helvetica Neue", Arial, sans-serif; overflow: hidden;
+  }
+  .countdown {
+    font-size: 15vw; font-weight: 900; letter-spacing: -5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .label {
+    color: #ff4f00; letter-spacing: 8px; text-transform: uppercase;
+    font-weight: bold; margin-bottom: -20px;
+  }
+  .flash {
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: #fff; opacity: 0; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+  <div class="label">Auto-Sequence Start</div>
+  <div class="countdown" id="cd">T- 03</div>
+  <div class="flash" id="fl"></div>
+  <script>
+    let count = 3;
+    const int = setInterval(() => {
+      count--;
+      document.getElementById('cd').innerText = `T- 0${count}`;
+      if(count <= 0) {
+        clearInterval(int);
+        document.getElementById('fl').style.opacity = '1';
+        setTimeout(() => {
+            document.getElementById('fl').style.transition = 'opacity 1s';
+            document.getElementById('fl').style.opacity = '0';
+            document.getElementById('cd').innerText = 'GLOBAL MISSION CONTROL';
+            document.getElementById('cd').style.fontSize = '4vw';
+            document.querySelector('.label').style.display = 'none';
+        }, 100);
+      }
+    }, 800);
+  </script>
+</body>
+</html>

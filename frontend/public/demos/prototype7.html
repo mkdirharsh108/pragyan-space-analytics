@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 7: Radar Sweep</title>
+<style>
+  body { margin: 0; background: #000; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: sans-serif; overflow: hidden;}
+  .radar {
+    width: 300px; height: 300px; border: 1px solid #333; border-radius: 50%; position: relative; overflow: hidden;
+  }
+  .radar::before, .radar::after {
+    content: ''; position: absolute; background: #333;
+  }
+  .radar::before { top: 50%; left: 0; right: 0; height: 1px; }
+  .radar::after { left: 50%; top: 0; bottom: 0; width: 1px; }
+  .sweep {
+    position: absolute; top: 0; left: 50%; width: 150px; height: 150px;
+    background: conic-gradient(from 0deg, transparent 70%, rgba(255,255,255,0.2) 100%);
+    transform-origin: bottom left;
+    animation: spin 2s linear infinite;
+  }
+  .blip {
+    width: 4px; height: 4px; background: #fff; position: absolute; border-radius: 50%;
+    animation: fade 2s infinite; opacity: 0;
+  }
+  .b1 { top: 60px; left: 200px; animation-delay: 0.5s; }
+  .b2 { top: 220px; left: 100px; animation-delay: 1.5s; }
+  
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+  @keyframes fade { 0% { opacity: 1; } 50% { opacity: 0; } }
+  .text { position: absolute; bottom: 20%; color: #888; letter-spacing: 5px; text-transform: uppercase; font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="radar">
+    <div class="sweep"></div>
+    <div class="blip b1"></div>
+    <div class="blip b2"></div>
+  </div>
+  <div class="text">Scanning Orbit</div>
+</body>
+</html>

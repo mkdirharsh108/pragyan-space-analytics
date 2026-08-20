@@ -1,0 +1,262 @@
+[
+  {
+    "id": "falcon_9",
+    "name": "Falcon 9",
+    "agency": "SpaceX",
+    "height_m": 70,
+    "thrust_kn": 7607,
+    "payload_leo_kg": 22800,
+    "cost_per_launch_m": 62,
+    "description": "A partially reusable two-stage-to-orbit medium-lift launch vehicle designed and manufactured by SpaceX."
+  },
+  {
+    "id": "falcon_heavy",
+    "name": "Falcon Heavy",
+    "agency": "SpaceX",
+    "height_m": 70,
+    "thrust_kn": 22819,
+    "payload_leo_kg": 63800,
+    "cost_per_launch_m": 90,
+    "description": "A partially reusable heavy-lift launch vehicle designed and manufactured by SpaceX."
+  },
+  {
+    "id": "starship",
+    "name": "Starship",
+    "agency": "SpaceX",
+    "height_m": 121,
+    "thrust_kn": 74400,
+    "payload_leo_kg": 150000,
+    "cost_per_launch_m": 10,
+    "description": "A fully reusable super heavy-lift launch vehicle being developed by SpaceX, the tallest and most powerful ever built."
+  },
+  {
+    "id": "saturn_v",
+    "name": "Saturn V",
+    "agency": "NASA",
+    "height_m": 110.6,
+    "thrust_kn": 34500,
+    "payload_leo_kg": 140000,
+    "cost_per_launch_m": 1230,
+    "description": "An American human-rated super heavy-lift launch vehicle used by NASA between 1967 and 1973 for the Apollo program."
+  },
+  {
+    "id": "space_shuttle",
+    "name": "Space Shuttle",
+    "agency": "NASA",
+    "height_m": 56.1,
+    "thrust_kn": 30160,
+    "payload_leo_kg": 27500,
+    "cost_per_launch_m": 1500,
+    "description": "A partially reusable low Earth orbital spacecraft system operated from 1981 to 2011 by NASA."
+  },
+  {
+    "id": "sls_block_1",
+    "name": "SLS Block 1",
+    "agency": "NASA",
+    "height_m": 98.1,
+    "thrust_kn": 39100,
+    "payload_leo_kg": 95000,
+    "cost_per_launch_m": 2200,
+    "description": "The Space Launch System is an American super heavy-lift expendable launch vehicle used for the Artemis program."
+  },
+  {
+    "id": "pslv",
+    "name": "PSLV",
+    "agency": "ISRO",
+    "height_m": 44,
+    "thrust_kn": 4800,
+    "payload_leo_kg": 3800,
+    "cost_per_launch_m": 25,
+    "description": "Polar Satellite Launch Vehicle is an expendable medium-lift launch vehicle designed and operated by ISRO."
+  },
+  {
+    "id": "gslv_mk3",
+    "name": "LVM3 (GSLV Mk III)",
+    "agency": "ISRO",
+    "height_m": 43.4,
+    "thrust_kn": 9890,
+    "payload_leo_kg": 10000,
+    "cost_per_launch_m": 46,
+    "description": "Launch Vehicle Mark-3 is an expendable medium-heavy lift launch vehicle developed by the Indian Space Research Organisation."
+  },
+  {
+    "id": "soyuz",
+    "name": "Soyuz",
+    "agency": "Roscosmos",
+    "height_m": 46.1,
+    "thrust_kn": 4140,
+    "payload_leo_kg": 8200,
+    "cost_per_launch_m": 48,
+    "description": "A family of expendable Russian and Soviet carrier rockets developed by OKB-1 and manufactured by Progress Rocket Space Centre."
+  },
+  {
+    "id": "proton_m",
+    "name": "Proton-M",
+    "agency": "Roscosmos",
+    "height_m": 58.2,
+    "thrust_kn": 10532,
+    "payload_leo_kg": 23000,
+    "cost_per_launch_m": 65,
+    "description": "An expendable Russian heavy-lift launch vehicle derived from the Soviet-era Proton."
+  },
+  {
+    "id": "ariane_5",
+    "name": "Ariane 5",
+    "agency": "ESA",
+    "height_m": 52,
+    "thrust_kn": 13400,
+    "payload_leo_kg": 20000,
+    "cost_per_launch_m": 170,
+    "description": "A European heavy-lift space launch vehicle developed and operated by Arianespace for the European Space Agency (ESA)."
+  },
+  {
+    "id": "ariane_6",
+    "name": "Ariane 6",
+    "agency": "ESA",
+    "height_m": 63,
+    "thrust_kn": 13700,
+    "payload_leo_kg": 21650,
+    "cost_per_launch_m": 115,
+    "description": "The newest heavy-lift launch vehicle developed by ArianeGroup for the European Space Agency."
+  },
+  {
+    "id": "delta_iv_heavy",
+    "name": "Delta IV Heavy",
+    "agency": "ULA",
+    "height_m": 72,
+    "thrust_kn": 9420,
+    "payload_leo_kg": 28370,
+    "cost_per_launch_m": 350,
+    "description": "An expendable heavy-lift launch vehicle, the largest type of the Delta IV family."
+  },
+  {
+    "id": "atlas_v",
+    "name": "Atlas V",
+    "agency": "ULA",
+    "height_m": 58.3,
+    "thrust_kn": 3827,
+    "payload_leo_kg": 18850,
+    "cost_per_launch_m": 110,
+    "description": "An expendable medium-lift launch vehicle operated by United Launch Alliance."
+  },
+  {
+    "id": "electron",
+    "name": "Electron",
+    "agency": "Rocket Lab",
+    "height_m": 18,
+    "thrust_kn": 224,
+    "payload_leo_kg": 300,
+    "cost_per_launch_m": 7.5,
+    "description": "A partially recoverable orbital launch vehicle developed by Rocket Lab for the small satellite market."
+  },
+  {
+    "id": "long_march_5",
+    "name": "Long March 5",
+    "agency": "CNSA",
+    "height_m": 56.9,
+    "thrust_kn": 10565,
+    "payload_leo_kg": 25000,
+    "cost_per_launch_m": 150,
+    "description": "A Chinese heavy-lift launch vehicle developed by the China Academy of Launch Vehicle Technology (CALT)."
+  },
+  {
+    "id": "soyuz_u",
+    "name": "Soyuz-U",
+    "agency": "Roscosmos",
+    "height_m": 51.1,
+    "thrust_kn": 4050,
+    "payload_leo_kg": 6900,
+    "cost_per_launch_m": 45,
+    "description": "An expendable launch vehicle, the most frequently flown orbital rocket in history."
+  },
+  {
+    "id": "long_march_3b",
+    "name": "Long March 3B",
+    "agency": "CNSA",
+    "height_m": 54.8,
+    "thrust_kn": 5923,
+    "payload_leo_kg": 11500,
+    "cost_per_launch_m": 70,
+    "description": "China's primary orbital workhorse for geosynchronous satellite launches."
+  },
+  {
+    "id": "delta_ii",
+    "name": "Delta II",
+    "agency": "ULA",
+    "height_m": 39,
+    "thrust_kn": 3000,
+    "payload_leo_kg": 6100,
+    "cost_per_launch_m": 51,
+    "description": "An expendable launch vehicle originally designed and built by McDonnell Douglas, with a highly reliable flight record."
+  },
+  {
+    "id": "titan_iv",
+    "name": "Titan IV",
+    "agency": "NASA",
+    "height_m": 44,
+    "thrust_kn": 15000,
+    "payload_leo_kg": 21680,
+    "cost_per_launch_m": 432,
+    "description": "A family of heavy-lift space launch vehicles developed by Martin Marietta for the U.S. Air Force and NASA."
+  },
+  {
+    "id": "h_iia",
+    "name": "H-IIA",
+    "agency": "JAXA",
+    "height_m": 53,
+    "thrust_kn": 4900,
+    "payload_leo_kg": 15000,
+    "cost_per_launch_m": 90,
+    "description": "An active expendable launch system operated by Mitsubishi Heavy Industries for the Japan Aerospace Exploration Agency."
+  },
+  {
+    "id": "vega",
+    "name": "Vega",
+    "agency": "ESA",
+    "height_m": 30,
+    "thrust_kn": 2200,
+    "payload_leo_kg": 1500,
+    "cost_per_launch_m": 37,
+    "description": "An expendable launch system developed by the Italian Space Agency and the European Space Agency for small payloads."
+  },
+  {
+    "id": "antares",
+    "name": "Antares",
+    "agency": "Northrop Grumman",
+    "height_m": 42.5,
+    "thrust_kn": 3265,
+    "payload_leo_kg": 8000,
+    "cost_per_launch_m": 85,
+    "description": "An expendable launch system developed to launch the Cygnus spacecraft to the International Space Station."
+  },
+  {
+    "id": "new_glenn",
+    "name": "New Glenn",
+    "agency": "Blue Origin",
+    "height_m": 98,
+    "thrust_kn": 17100,
+    "payload_leo_kg": 45000,
+    "cost_per_launch_m": 120,
+    "description": "A heavy-lift orbital launch vehicle in development by Blue Origin, named after astronaut John Glenn."
+  },
+  {
+    "id": "vulcan_centaur",
+    "name": "Vulcan Centaur",
+    "agency": "ULA",
+    "height_m": 61.6,
+    "thrust_kn": 4900,
+    "payload_leo_kg": 27200,
+    "cost_per_launch_m": 110,
+    "description": "A heavy-lift launch vehicle designed to meet the demands of the US Space Force's National Security Space Launch program."
+  },
+  {
+    "id": "nuri",
+    "name": "Nuri (KSLV-II)",
+    "agency": "KARI",
+    "height_m": 47.2,
+    "thrust_kn": 2942,
+    "payload_leo_kg": 3300,
+    "cost_per_launch_m": 40,
+    "description": "South Korea's first fully indigenous orbital launch vehicle, designed to carry payloads to low Earth orbit."
+  }
+]

@@ -1,0 +1,92 @@
+{
+  "Decade-by-Decade Dominance": "The 60s and 70s were defined by explosive Cold War growth, followed by a lull in the 90s, and an unprecedented commercial resurgence in the 2020s.",
+  "Global Launch Footprint": "Geographic launch distribution highlights the strategic necessity of equatorial proximity and coastal safety corridors.",
+  "Success vs Failure Volume": "Early spaceflight was plagued by high failure rates due to experimental hardware, but modern reliability has driven failure rates to historic lows.",
+  "Top 10 Rocket Workhorses": "Legacy Soviet hardware dominates the historical leaderboard, but modern American commercial vehicles boast unprecedented success rates.",
+  "Outcome Matrix": "Agencies with legacy cold-war programs naturally show higher failure ratios due to early experimental losses, whereas modern startups benefit from mature technology.",
+  "The Global Monopoly": "Market share visualization proves that despite the rise of international players, the foundational superpowers still account for most historical mass-to-orbit.",
+  "Fleet Graveyard vs Vanguard": "Historical attrition: the vast majority of rocket designs are retired after short operational lives, leaving only the most reliable architectures active.",
+  "The Space Ecosystem Hierarchy": "The structural hierarchy of the global space ecosystem flows from sovereign state funding down to commercial sub-contractors.",
+  "Agency DNA Profile": "A deep dive into the specific vehicle families that define an agency's unique approach to orbital mechanics and payload delivery.",
+  "Eras of the Vanguard Fleets": "A timeline of dominance, showcasing exactly when the world transitioned from Apollo-era tech to Shuttle-era, and finally to reusables.",
+  "Agency Dominance Rank": "The historical leaderboard of spaceflight, proving that state-backed mega-agencies still hold the most cumulative flight heritage.",
+
+  "Cold War Output (Volume)": "The 1960s saw humanity push the limits of physics with extreme volume and frequent, catastrophic hardware failures.",
+  "Catastrophes Timeline": "Rapid iteration during the Cold War meant that failures were expected, leading to a highly condensed cluster of anomalies.",
+  "The 60s Workhorses": "Early expendable rockets were built rapidly to establish dominance, sacrificing reliability for sheer numbers.",
+  "Payload Status Distribution": "During the Golden Age, reaching orbit at all was a massive achievement, resulting in many partial or total payload losses.",
+
+  "Soviet Dominance (Volume)": "Following the Moon landing, the Soviet Union pivoted to building a massive, persistent orbital industrial complex.",
+  "Cold War Output Comparison": "While the US slowed its launch cadence to develop the Shuttle, the USSR maintained a relentless rhythm of disposable rockets.",
+  "Most Active Vehicles of the Era": "The 70s and 80s were dominated by the sheer manufacturing scale of Russian aerospace factories.",
+  "Catastrophes during the Lull": "Even during periods of reduced global launch activity, the inherent dangers of orbital mechanics claimed numerous vehicles.",
+
+  "Half a Century of Flight": "The R-7 family proved that mass production and simple, robust designs can dominate spaceflight for half a century.",
+  "The Sub-variants": "Incremental upgrades over decades allowed Soviet engineers to refine a single core architecture into dozens of specialized variants.",
+  "Operations Timeline": "A timeline of Soviet engineering reveals a philosophy of 'if it works, build a thousand'.",
+  "Failures by Variant": "Early variants suffered high attrition, but late-stage iterations achieved remarkable reliability through sheer trial and error.",
+
+  "Super-Heavy Flights over Time": "Super-heavy lift vehicles represent the absolute limit of human engineering, appearing only when lunar or deep-space ambitions demand them.",
+  "Payload Volume": "A single super-heavy launch can deliver more mass to orbit than dozens of standard medium-lift vehicles combined.",
+  "Heavy-Lifter Success Rates": "Due to their complexity and massive acoustic environments, early heavy lifters suffered spectacular and costly failures.",
+  "The Modern Era of Heavies": "The resurgence of super-heavy vehicles is entirely driven by a renewed global interest in Lunar and Martian settlement.",
+
+  "European Launch Volume": "Europe's independent access to space provided a critical, highly-reliable alternative to the US-Soviet duopoly.",
+  "Ariane vs Vega Deployments": "The Ariane family secured Europe's dominance in commercial geostationary satellite launches throughout the 90s and 2000s.",
+  "Reliability over Time": "Arianespace prioritized extreme reliability for expensive commercial payloads over rapid cadence and risk-taking.",
+  "Payload Status Distribution": "European architectures boast incredibly low failure rates, reflecting their conservative and meticulous engineering approach.",
+
+  "PSLV Flight Heritage": "The PSLV is a testament to ISRO's ability to develop highly reliable, cost-effective orbital access independently.",
+  "Total Flights by Variant": "Incremental improvements to the PSLV architecture have allowed India to dominate the global rideshare market.",
+  "Success Rate": "ISRO's workhorse maintains an exceptionally high success rate, making it a favorite for international small-sat operators.",
+  "Launch Anomalies": "Anomalies are incredibly rare for the PSLV, cementing its status as one of the world's most dependable launch vehicles.",
+
+  "Atlas vs Delta Utilization": "ULA's consolidation of the Atlas and Delta families created a monopoly on highly-lucrative US national security launches.",
+  "Total Payload Volume": "For decades, ULA was the sole provider capable of lifting America's most sensitive and massive intelligence payloads.",
+  "Missions Flown (Leaderboard)": "The Atlas V stands as one of the most reliable and prolific rockets in modern American history.",
+  "Fleet Operational Reliability": "ULA's perfect success rate on critical missions justified their premium pricing before the commercial space revolution.",
+
+  "The Modern Space Race (Volume)": "The 21st century is defined by the rapid commercialization of US spaceflight clashing with China's massive state-backed expansion.",
+  "Output Trajectories": "While legacy powers stagnate, Chinese and American launch cadences are accelerating at an unprecedented, exponential rate.",
+  "Total Payload Volume 2000+": "The modern era has seen a massive shift in payload distribution, driven heavily by mega-constellations and international competition.",
+  "Top Rockets of the Superpowers": "The Falcon 9 and Long March families represent the two distinct philosophies dominating modern orbital access.",
+
+  "Next-Gen Rollout": "ISRO is rapidly expanding its capabilities beyond the PSLV, introducing next-generation heavy lifters to secure domestic independence.",
+  "Vehicle Output Comparison": "The introduction of the LVM3 proves India's commitment to human spaceflight and deep-space exploration.",
+  "Anomalies in Development": "Developing heavy-lift capabilities inherently comes with a learning curve, reflected in early developmental anomalies.",
+  "Overall Reliability": "As ISRO's next-generation fleet matures, their overall reliability curve is stabilizing at world-class levels.",
+
+  "The SpaceX Spike (Volume)": "SpaceX's introduction of rapid reusability completely shattered historical launch cadence records, creating a vertical spike in global orbital access.",
+  "Global Output (2015+)": "The Falcon 9 alone has launched more times in recent years than entire sovereign nations have managed in decades.",
+  "Most Active Vehicles of the Era": "Reusability fundamentally altered the economics of space, allowing a single vehicle architecture to dominate global output.",
+  "The Global Success Rate": "Despite flying at an unprecedented, rapid-fire cadence, modern reusable architectures maintain near-perfect success rates.",
+
+  "Exponential Output": "The miniaturization of electronics sparked a massive surge in demand for dedicated small-sat micro-launchers.",
+  "Electron Success vs Failure": "Developing orbital-class micro-launchers is notoriously difficult, requiring extreme mass-optimization and novel manufacturing.",
+  "Learning Curve (Anomalies)": "The early failures of startups like Rocket Lab demonstrate the unforgiving nature of orbital physics, regardless of vehicle size.",
+  "Reliability Trend": "Once the initial manufacturing hurdles are overcome, micro-launchers can achieve reliable, rapid-cadence operations.",
+
+  "The Swarm Growth": "The proliferation of venture-backed aerospace startups has led to an explosion of novel, untested launch vehicle designs.",
+  "Startup Vehicle Diversification": "Unlike legacy state agencies, modern startups are experimenting with entirely new propellants, architectures, and recovery methods.",
+  "Total Flights Logged": "Most modern launch startups will never reach orbit; those that do represent the absolute pinnacle of lean aerospace engineering.",
+  "Graveyard Orbit": "The history of spaceflight is littered with the remains of canceled projects and failed startups that couldn't survive the brutal economics of launch.",
+  
+  "A History of Failure (Volume)": "A comprehensive look at the sheer volume of hardware lost to the unforgiving vacuum of space over the last 70 years.",
+  "Vehicles with Highest Anomalies": "Certain experimental architectures pushed the boundaries of physics too far, resulting in historically high anomaly rates.",
+  "Catastrophes by Agency": "Early space programs accepted extreme risk, leading to high catastrophe rates that would be politically unacceptable today.",
+  "Detailed Status Codes Over Time": "The evolution of launch failures: from catastrophic engine explosions in the 60s to highly-specific telemetry anomalies today.",
+  
+  "The Golden Age": "An era defined by reckless ambition and existential geopolitical pressure. The 1960s saw unprecedented funding pour into aerospace engineering, prioritizing rapid iteration and sheer volume over reliability. The result was a spectacularly high failure rate, but it forged the foundational technologies that made orbital access a permanent human capability.",
+  "Post-Apollo Era": "While the US retreated from deep-space ambitions to focus on the reusable Shuttle, the Soviet Union methodically built a permanent orbital industrial complex. This period cemented the transition from experimental space races to operational, long-term habitation and sustained mass-to-orbit logistics.",
+  "Soviet Steel": "If it isn't broken, build a thousand of them. The Soviet approach to aerospace relied on incremental, decades-long upgrades to a single, robust platform. This chart proves that in spaceflight, simplicity and heritage will almost always out-compete bleeding-edge complexity.",
+  "The Heavyweights": "The titans of orbital access. Capable of lifting over 50 metric tons, these rockets are exceedingly rare and historically prone to catastrophic developmental failures. However, the modern resurgence of heavy-lifters signals a definitive pivot back toward lunar and deep-space infrastructure.",
+  "European Ascent": "Recognizing the strategic danger of relying on the US-Soviet duopoly, Europe forged its own path. The Ariane program eschewed the space race in favor of commercial viability, ultimately dominating the global geostationary telecom market throughout the 1990s and 2000s with extreme reliability.",
+  "India's Workhorse": "ISRO’s PSLV is a triumph of independent, cost-effective engineering. By meticulously refining a single medium-lift architecture, India bypassed the costly experimental failures of early superpowers and immediately established one of the most reliable and sought-after rideshare vehicles on Earth.",
+  "The ULA Monopoly": "The pinnacle of legacy aerospace contracting. Before the commercial space revolution, ULA was the only entity capable of launching America's multi-billion dollar intelligence assets. Their flawless flight heritage represents the peak of traditional, risk-averse aerospace engineering.",
+  "The Modern Cold War": "The 21st century has ignited a new space race, fundamentally different from the first. Today, the rapid, explosive growth of US commercial enterprise (led by SpaceX) is colliding head-on with China's massive, state-directed expansion of orbital infrastructure.",
+  "Next-Gen ISRO": "A crucial inflection point for Indian aerospace. Developing heavy-lift and crew-rated capabilities is notoriously difficult, but as the LVM3 matures, ISRO is cementing its position not just as a commercial launch provider, but as a primary geopolitical space power.",
+  "The SpaceX Era": "The commercial space revolution. Reusability transformed rockets from disposable munitions into commercial airliners. The resulting vertical spike in launch volume has single-handedly enabled the deployment of massive global internet constellations, completely rewriting the rules of orbital mechanics.",
+  "The Electron Story": "The miniaturization of satellite technology sparked a massive demand for dedicated micro-launchers. Rocket Lab's Electron proved that orbital access could be achieved without state funding, utilizing novel manufacturing techniques like 3D printing and carbon composites.",
+  "The Micro-Launchers": "The democratization of space access. Dozens of commercial entities are experimenting with new propellants, aerospike engines, and balloon-launches. While attrition is high, those that survive represent the absolute bleeding-edge of lean aerospace engineering.",
+  "Graveyard Orbit": "The history of spaceflight is littered with the remains of canceled projects, failed startups, and obsolete architectures. This graveyard visualizes the brutal economics of launch: only the most cost-effective and reliable designs survive the crucible of the free market."
+}

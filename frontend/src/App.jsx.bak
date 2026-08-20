@@ -1,0 +1,1033 @@
+﻿import { useState, useEffect, useMemo, startTransition, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Rocket, Satellite, Activity, Globe, List, BarChart3, FilterX, X, LayoutDashboard, Orbit } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, BarChart, Bar, AreaChart, Area, Cell, ComposedChart, Treemap, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie } from 'recharts';
+import DataTable from './components/DataTable';
+import ChartBuilder from './components/ChartBuilder';
+import CuratedDashboards from './components/CuratedDashboards';
+import GeoMap from './components/GeoMap';
+import HistoricalTimeline from './components/HistoricalTimeline';
+import LiveLaunchBanner from './components/LiveLaunchBanner';
+import SpaceCommand from './components/SpaceCommand';
+import RocketGarage from './components/RocketGarage';
+import LiveOrbitalMap from './components/LiveOrbitalMap';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import SplashScreen from './components/SplashScreen';
+
+const EqualizerIcon = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect x="2" y="14" width="4" height="6" className="fill-cyan-500/20 stroke-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]" />
+    <rect x="8" y="10" width="4" height="10" className="fill-cyan-500/20 stroke-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]" />
+    <rect x="14" y="4" width="4" height="16" className="fill-cyan-500/20 stroke-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]" />
+    <rect x="20" y="12" width="4" height="8" className="fill-cyan-500/20 stroke-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]" />
+  </svg>
+);
+
+const NetworkNodesIcon = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M11 7L7.5 15 M13 7L16.5 15 M8 18L16 18" className="stroke-orange-500/50" />
+    <circle cx="12" cy="5" r="2.5" className="fill-orange-500/20 stroke-orange-400 drop-shadow-[0_0_6px_rgba(251,146,60,0.8)]" />
+    <circle cx="6" cy="18" r="2.5" className="fill-orange-500/20 stroke-orange-400 drop-shadow-[0_0_6px_rgba(251,146,60,0.8)]" />
+    <circle cx="18" cy="18" r="2.5" className="fill-orange-500/20 stroke-orange-400 drop-shadow-[0_0_6px_rgba(251,146,60,0.8)]" />
+  </svg>
+);
+
+const AGENCY_COLORS = { 
+  'NASA': '#2196F3', // Industrial Blue
+  'SpaceX': '#FF5722', // Safety Orange
+  'ISRO': '#FFC107', // Caution Yellow
+  'Roscosmos': '#F44336', // Warning Red
+  'CNSA': '#9C27B0', // Purple
+  'CASC': '#9C27B0', // Purple
+  'ESA': '#4CAF50', // Success Green
+  'Other': '#9E9E9E' // Steel Grey
+};
+
+const STATE_PALETTES = {
+  'USA': ['#0033AA', '#0077FF', '#88CCFF'], // 1. DISTINCT BLUE
+  'Russia/USSR': ['#AA0000', '#FF2222', '#FF5555'], // 2. DISTINCT RED
+  'Russia': ['#AA0000', '#FF2222', '#FF5555'], // Fallback
+  'USSR': ['#AA0000', '#FF2222', '#FF5555'], // Fallback
+  'China': ['#5500AA', '#9933FF', '#DDAAFF'], // 3. DISTINCT PURPLE
+  'India': ['#AA7700', '#FFBB00', '#FFEE99'], // 4. DISTINCT YELLOW
+  'Multinational': ['#007722', '#00CC44', '#88FFBB'], // 5. DISTINCT GREEN
+  'Unknown': ['#444444', '#888888', '#CCCCCC'], // GRAY
+};
+
+const CustomMainTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const sortedPayload = [...payload].sort((a, b) => {
+      if (a.value && b.value) return b.value - a.value;
+      return 0;
+    });
+    return (
+      <div className="glass-card p-4 border border-space-600/50">
+        <p className="text-white font-bold mb-2">{payload[0].payload.fullName || label || payload[0].name}</p>
+        {sortedPayload.map((entry, index) => (
+          <div key={index} className="flex items-center gap-2 mb-1">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color || entry.fill }}></div>
+            <p className="text-sm text-space-300 capitalize">
+              {entry.name}: <span className="text-white font-semibold">{entry.value}</span>
+            </p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomOutcomeTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass-card p-4 border border-space-600/50">
+        <p className="text-white font-bold mb-2">{label} (Total: {payload[0].payload.total})</p>
+        {payload.map((entry, index) => (
+          <div key={index} className="flex items-center gap-2 mb-1">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color || entry.fill }}></div>
+            <p className="text-sm text-space-300">
+              {entry.name}: <span className="text-white font-semibold">{entry.value}%</span> 
+              <span className="text-xs ml-1 text-space-400">({entry.payload[`raw${entry.name}`]} launches)</span>
+            </p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomBumpTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const validPayload = payload.filter(p => p.value !== null && p.value !== undefined);
+    const sortedPayload = validPayload.sort((a, b) => a.value - b.value);
+    
+    return (
+      <div className="glass-card p-4 border border-space-600/50 min-w-[150px]">
+        <p className="text-white font-bold mb-2">{label}</p>
+        {sortedPayload.map((entry, index) => (
+          <div key={index} className="flex items-center justify-between gap-4 mb-1">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color || entry.stroke }}></div>
+              <p className="text-sm text-space-300 capitalize">{entry.name}</p>
+            </div>
+            <p className="text-sm text-white font-semibold">#{entry.value}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+export default function App() {
+  const [launches, setLaunches] = useState([]);
+  const [timeline, setTimeline] = useState([]);
+  const [rockets, setRockets] = useState([]);
+  const [successTimeline, setSuccessTimeline] = useState([]);
+  const [allData, setAllData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [splashFinished, setSplashFinished] = useState(false);
+  
+  // States
+  const [selectedAgency, setSelectedAgency] = useState(null);
+  const [selectedDecade, setSelectedDecade] = useState(null);
+  const [viewMode, setViewMode] = useState('dashboard'); // 'dashboard' | 'presets' | 'builder' | 'table' | 'garage'
+  const [selectedMission, setSelectedMission] = useState(null);
+
+  // Space Command
+  const [commandConfig, setCommandConfig] = useState(null);
+
+  const decades = [
+    { label: 'All Time', value: null },
+    { label: '1950s', value: { start: 1950, end: 1959 } },
+    { label: '1960s (Space Race)', value: { start: 1960, end: 1969 } },
+    { label: '1970s', value: { start: 1970, end: 1979 } },
+    { label: '1980s', value: { start: 1980, end: 1989 } },
+    { label: '1990s', value: { start: 1990, end: 1999 } },
+    { label: '2000s', value: { start: 2000, end: 2009 } },
+    { label: '2010s', value: { start: 2010, end: 2019 } },
+    { label: '2020s', value: { start: 2020, end: 2029 } },
+  ];
+
+  const isInitialLoad = useRef(true);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(true), 0);
+    let params = [];
+    if (selectedAgency) params.push(`agency=${selectedAgency}`);
+    if (selectedDecade) {
+      params.push(`start_year=${selectedDecade.start}`);
+      params.push(`end_year=${selectedDecade.end}`);
+    }
+    const qs = params.length > 0 ? `?${params.join('&')}` : '';
+
+    const executeFetch = () => {
+      Promise.all([
+        fetch(`http://localhost:8001/api/launches${qs}`).then(res => res.json()),
+        fetch(`http://localhost:8001/api/timeline${qs}`).then(res => res.json()),
+        fetch(`http://localhost:8001/api/rockets${qs}`).then(res => res.json()),
+        fetch(`http://localhost:8001/api/success_over_time${qs}`).then(res => res.json()),
+        fetch(`http://localhost:8001/api/all_data${qs}`).then(res => res.json())
+      ]).then(([lData, tData, rData, sData, all]) => {
+        setLaunches(lData);
+        setRockets(rData);
+        setSuccessTimeline(sData);
+        setAllData(all);
+        
+        const timelineMap = {};
+        tData.forEach(row => {
+          if (!timelineMap[row.year]) {
+            timelineMap[row.year] = { year: row.year };
+            Object.keys(AGENCY_COLORS).forEach(a => timelineMap[row.year][a] = 0);
+          }
+          timelineMap[row.year][row.agency] = row.launches;
+        });
+        setTimeline(Object.values(timelineMap));
+        startTransition(() => {
+          setLoading(false);
+        });
+      }).catch(err => {
+        console.error("Fetch error", err);
+        startTransition(() => {
+          setLoading(false);
+        });
+      });
+    };
+
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      const t = setTimeout(executeFetch, 4200);
+      return () => clearTimeout(t);
+    } else {
+      executeFetch();
+    }
+  }, [selectedAgency, selectedDecade]);
+
+  const handleSpaceCommand = (config) => {
+    setCommandConfig(config);
+    setViewMode('builder');
+  };
+
+  const totalLaunches = launches.reduce((acc, curr) => acc + curr.total_launches, 0);
+  const totalSuccess = launches.reduce((acc, curr) => acc + curr.successful_launches, 0);
+  const successRate = totalLaunches > 0 ? Math.round((totalSuccess / totalLaunches) * 100) : 0;
+  const uniqueAgenciesCount = allData ? new Set(allData.map(d => d.real_agency)).size : 0;
+
+
+  // --- NEW CINEMATIC DATA COMPUTATIONS ---
+  const { treeMapData, maidenFlightsData, divergingFleetData, radarData, ecoSunburstState, ecoSunburstAgency, ecoSunburstRocket, ganttData, outcomeBarData, bumpChartData } = useMemo(() => {
+    if (!allData || allData.length === 0) return { treeMapData: [], maidenFlightsData: [], divergingFleetData: [], radarData: [], ecoSunburstState: [], ecoSunburstAgency: [], ecoSunburstRocket: [], ganttData: [], outcomeBarData: [], bumpChartData: [] };
+    
+    // 1. TreeMap (Geopolitical Monopoly)
+    const COUNTRY_NAMES = {
+      'US': 'USA', 'RU': 'Russia', 'SU': 'USSR', 'CN': 'China', 'IN': 'India',
+      'J': 'Japan', 'F': 'France', 'NZ': 'New Zealand', 'IL': 'Israel', 'IR': 'Iran',
+      'KP': 'North Korea', 'KR': 'South Korea', 'BR': 'Brazil', 'UK': 'United Kingdom',
+      'I': 'Italy', 'I-ESA': 'Italy (ESA)', 'I-ELDO': 'Italy (ELDO)', 'D': 'Germany',
+      'CYM': 'Cayman Islands', 'AU': 'Australia'
+    };
+
+    const agencyGroups = {};
+    allData.forEach(d => {
+      const agency = d.dashboard_agency || 'Unknown';
+      let stateCode = d.state_code || 'Unknown';
+      if (stateCode === 'SU' || stateCode === 'RU') stateCode = 'Russia/USSR';
+      
+      if (!agencyGroups[agency]) agencyGroups[agency] = {};
+      if (!agencyGroups[agency][stateCode]) agencyGroups[agency][stateCode] = 0;
+      agencyGroups[agency][stateCode]++;
+    });
+    
+    const treeMapData = Object.entries(agencyGroups).map(([agency, states]) => {
+      const color = AGENCY_COLORS[agency] || AGENCY_COLORS['Other'];
+      const stateKeys = Object.keys(states);
+      return {
+        name: agency,
+        children: Object.entries(states).map(([stateCode, size]) => {
+          const fullCountryName = COUNTRY_NAMES[stateCode] || stateCode;
+          
+          let displayName;
+          if (agency === 'Other') {
+            displayName = stateCode;
+          } else if (stateKeys.length > 1) {
+            displayName = `${agency} (${stateCode})`;
+          } else {
+            displayName = agency;
+          }
+
+          let fullName;
+          if (agency === 'Other') {
+            fullName = `Other (${fullCountryName})`;
+          } else if (stateKeys.length > 1) {
+            fullName = `${agency} (${fullCountryName})`;
+          } else {
+            fullName = `${agency} (${fullCountryName})`;
+          }
+
+          return { 
+            name: stateCode, 
+            displayName,
+            fullName,
+            size,
+            agencyName: agency,
+            color: color
+          };
+        })
+      };
+    });
+
+    // 2. Maiden Flights (Scatter)
+    const rocketFirstFlights = {};
+    allData.forEach(d => {
+      if (!rocketFirstFlights[d.rocket_type] || d.year < rocketFirstFlights[d.rocket_type].year) {
+        rocketFirstFlights[d.rocket_type] = { year: d.year, is_success: (d.is_success === 1 || d.is_success === true || d.success_status === 'O' || d.success_status === 'S') ? 1 : 0, agency: d.dashboard_agency };
+      }
+    });
+    const agencyMaidenStats = {};
+    Object.values(rocketFirstFlights).forEach(d => {
+      const a = ['SpaceX', 'NASA', 'Roscosmos', 'CASC', 'ISRO', 'ESA'].includes(d.agency) ? d.agency : 'Other';
+      if (!agencyMaidenStats[a]) agencyMaidenStats[a] = { agency: a, success: 0, failure: 0, total: 0 };
+      if (d.is_success) agencyMaidenStats[a].success++;
+      else agencyMaidenStats[a].failure++;
+      agencyMaidenStats[a].total++;
+    });
+    const maidenFlightsData = Object.values(agencyMaidenStats).sort((a,b) => b.total - a.total);
+
+    // 3. Graveyard vs Active (Diverging Bar)
+    const rocketLastFlown = {};
+    allData.forEach(d => {
+      if (!rocketLastFlown[d.rocket_type] || d.year > rocketLastFlown[d.rocket_type].year) {
+        rocketLastFlown[d.rocket_type] = { year: d.year, agency: d.dashboard_agency };
+      }
+    });
+    const agencyFleet = {};
+    Object.values(rocketLastFlown).forEach(r => {
+      const agency = ['SpaceX', 'NASA', 'Roscosmos', 'CASC', 'ISRO', 'ESA'].includes(r.agency) ? r.agency : 'Other';
+      if (!agencyFleet[agency]) agencyFleet[agency] = { agency, active: 0, retired: 0 };
+      if (r.year >= 2020) agencyFleet[agency].active += 1;
+      else agencyFleet[agency].retired -= 1;
+    });
+    const divergingFleetData = Object.values(agencyFleet).sort((a,b) => b.active - a.active);
+
+    // 4. Agency DNA (Radar)
+    const topAgencies = ['SpaceX', 'NASA', 'Roscosmos', 'CASC', 'ISRO'];
+    const agencyStats = {};
+    topAgencies.forEach(a => agencyStats[a] = { volume: 0, successes: 0, rockets: new Set(), minYear: 9999, maxYear: 0 });
+    
+    allData.forEach(d => {
+      const a = d.dashboard_agency;
+      if (agencyStats[a]) {
+        agencyStats[a].volume++;
+        if (d.is_success === 1 || d.is_success === true || d.success_status === 'O' || d.success_status === 'S') agencyStats[a].successes++;
+        agencyStats[a].rockets.add(d.rocket_type);
+        if (d.year < agencyStats[a].minYear) agencyStats[a].minYear = d.year;
+        if (d.year > agencyStats[a].maxYear) agencyStats[a].maxYear = d.year;
+      }
+    });
+
+    const maxVolume = Math.max(...topAgencies.map(a => agencyStats[a].volume));
+    const maxDiversity = Math.max(...topAgencies.map(a => agencyStats[a].rockets.size));
+    const maxSpan = Math.max(...topAgencies.map(a => agencyStats[a].maxYear - agencyStats[a].minYear));
+
+    const radarData = [
+      { metric: 'Volume', ...Object.fromEntries(topAgencies.map(a => [a, Math.round((agencyStats[a].volume / maxVolume) * 100)])) },
+      { metric: 'Reliability', ...Object.fromEntries(topAgencies.map(a => [a, Math.round((agencyStats[a].successes / Math.max(1, agencyStats[a].volume)) * 100)])) },
+      { metric: 'Diversity', ...Object.fromEntries(topAgencies.map(a => [a, Math.round((agencyStats[a].rockets.size / maxDiversity) * 100)])) },
+      { metric: 'Era Span', ...Object.fromEntries(topAgencies.map(a => [a, Math.round(((agencyStats[a].maxYear - agencyStats[a].minYear) / Math.max(1, maxSpan)) * 100)])) }
+    ];
+
+    // 5. Space Ecosystem Flow (Nested Sunburst)
+    const topSankeyAgencies = ['NASA', 'SpaceX', 'Roscosmos', 'CASC', 'ISRO', 'ESA'];
+    const flowData = {};
+    allData.forEach(d => {
+      const a = d.dashboard_agency;
+      if (!topSankeyAgencies.includes(a)) return;
+      let s = COUNTRY_NAMES[d.state_code] || d.state_code || 'Unknown';
+      
+      if (s === 'Russia' || s === 'USSR' || d.state_code === 'RU' || d.state_code === 'SU') {
+        s = 'Russia/USSR';
+      }
+      
+      // Map ESA to 'Multinational' instead of treating it as 'France' or undefined
+      if (a === 'ESA') s = 'Multinational';
+
+      const r = d.rocket_type;
+      
+      if (!flowData[s]) flowData[s] = {};
+      if (!flowData[s][a]) flowData[s][a] = {};
+      if (!flowData[s][a][r]) flowData[s][a][r] = 0;
+      flowData[s][a][r]++;
+    });
+
+    const ecoSunburstState = [];
+    const ecoSunburstAgency = [];
+    const ecoSunburstRocket = [];
+
+    Object.entries(flowData).forEach(([s, agencies]) => {
+      let stateTotal = 0;
+      Object.entries(agencies).forEach(([a, rockets]) => {
+        let agencyTotal = 0;
+        const sortedRockets = Object.entries(rockets).sort((x,y) => y[1]-x[1]).slice(0,4); // Top 4 rockets
+        
+        sortedRockets.forEach(([r, count]) => {
+          ecoSunburstRocket.push({ name: r, value: count, fullName: `${s} > ${a} > ${r}`, agency: a, state: s });
+          agencyTotal += count;
+        });
+        if (agencyTotal > 0) {
+          ecoSunburstAgency.push({ name: a, value: agencyTotal, fullName: `${s} > ${a}`, state: s });
+          stateTotal += agencyTotal;
+        }
+      });
+      if (stateTotal > 0) {
+        ecoSunburstState.push({ name: s, value: stateTotal, fullName: s });
+      }
+    });
+
+    // 6. Rocket Lifespans (Gantt)
+    const rocketCounts = {};
+    allData.forEach(d => { rocketCounts[d.rocket_type] = (rocketCounts[d.rocket_type] || 0) + 1; });
+    const topRockets = Object.entries(rocketCounts).sort((a,b) => b[1]-a[1]).slice(0, 15).map(x => x[0]);
+    const ganttData = topRockets.map(r => ({
+      rocket: r,
+      agency: rocketLastFlown[r]?.agency || 'Other',
+      range: [rocketFirstFlights[r]?.year || 1950, rocketLastFlown[r]?.year || 2024],
+      total: rocketCounts[r]
+    })).sort((a,b) => a.range[0] - b.range[0]);
+
+    // 7. Outcome Matrix (100% Stacked Bar)
+    const agencyStatusMap = {};
+    allData.forEach(d => {
+      const a = topSankeyAgencies.includes(d.dashboard_agency) ? d.dashboard_agency : 'Other';
+      let s = d.success_status;
+      if (s === 'O' || d.is_success === 1) s = 'Success';
+      else if (s === 'F' || d.is_success === 0) s = 'Failure';
+      else s = 'Unknown';
+      
+      if (!agencyStatusMap[a]) agencyStatusMap[a] = { total: 0, statuses: {} };
+      if (!agencyStatusMap[a].statuses[s]) agencyStatusMap[a].statuses[s] = 0;
+      agencyStatusMap[a].total++;
+      agencyStatusMap[a].statuses[s]++;
+    });
+    
+    const outcomeBarData = Object.entries(agencyStatusMap).map(([agency, data]) => {
+      const succ = data.statuses['Success'] || 0;
+      const fail = data.statuses['Failure'] || 0;
+      const part = data.statuses['Partial'] || 0;
+      const unk = data.statuses['Unknown'] || 0;
+      const total = data.total;
+      
+      return {
+        agency,
+        total,
+        Success: Number(((succ / total) * 100).toFixed(1)),
+        Failure: Number(((fail / total) * 100).toFixed(1)),
+        Partial: Number(((part / total) * 100).toFixed(1)),
+        Unknown: Number(((unk / total) * 100).toFixed(1)),
+        rawSuccess: succ,
+        rawFailure: fail,
+        rawPartial: part,
+        rawUnknown: unk
+      };
+    }).sort((a, b) => b.total - a.total);
+
+    // 8. Decades of Dominance (Bump Chart)
+    const decadeMap = {};
+    const decadesList = [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020];
+    const topDecadeAgencies = ['NASA', 'Roscosmos', 'SpaceX', 'CASC', 'ISRO', 'ESA', 'Other'];
+    
+    decadesList.forEach(dec => {
+      decadeMap[`${dec}s`] = { decade: `${dec}s`, raw: {} };
+      topDecadeAgencies.forEach(ag => {
+        decadeMap[`${dec}s`].raw[ag] = 0;
+      });
+    });
+    
+    allData.forEach(d => {
+      const dec = Math.floor(d.year / 10) * 10;
+      if (dec < 1950 || dec > 2020) return;
+      const ag = topDecadeAgencies.includes(d.dashboard_agency) ? d.dashboard_agency : 'Other';
+      decadeMap[`${dec}s`].raw[ag]++;
+    });
+    
+    const bumpChartData = decadesList.map(dec => {
+      const decKey = `${dec}s`;
+      const obj = { decade: decKey };
+      const rawCounts = topDecadeAgencies.map(ag => ({ agency: ag, count: decadeMap[decKey].raw[ag] }));
+      rawCounts.sort((a, b) => b.count - a.count);
+      rawCounts.forEach((item, index) => {
+        obj[item.agency] = item.count > 0 ? index + 1 : null;
+      });
+      return obj;
+    });
+
+    return { treeMapData, maidenFlightsData, divergingFleetData, radarData, ecoSunburstState, ecoSunburstAgency, ecoSunburstRocket, ganttData, outcomeBarData, bumpChartData };
+  }, [allData]);
+  // -----------------------------------------
+
+  const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const itemVariants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } };
+
+  // Removed tooltips from here
+
+  return (
+    <div className="min-h-screen p-4 md:p-8 font-sans pb-20 relative overflow-x-hidden">
+      
+      {!splashFinished && <SplashScreen isLoaded={!loading} onComplete={() => setSplashFinished(true)} />}
+
+      {/* Header */}
+      <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold font-display text-white tracking-tight">Pragyan | αñ¬αÑìαñ░αñ£αÑìαñ₧αñ╛αñ¿</h1>
+          <p className="text-space-400 mt-1">Orbital Launch Database & Analytics</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <select 
+            className="glass-panel text-white text-sm rounded-lg focus:ring-agency-nasa focus:border-agency-nasa block p-2.5 outline-none"
+            onChange={(e) => setSelectedDecade(decades[e.target.value].value)}
+          >
+            {decades.map((dec, idx) => <option key={idx} value={idx}>{dec.label}</option>)}
+          </select>
+
+          {(selectedAgency || selectedDecade) && (
+            <button 
+              onClick={() => { setSelectedAgency(null); setSelectedDecade(null); document.querySelector('select').value=0; }}
+              className="flex items-center gap-2 px-3 py-2 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg text-sm transition-colors"
+            >
+              <FilterX className="w-4 h-4" /> Clear
+            </button>
+          )}
+
+          {/* View Toggles */}
+          <div className="flex glass-panel p-1">
+            <button onClick={() => setViewMode('dashboard')} className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'dashboard' ? 'bg-agency-nasa/20 text-agency-nasa border border-agency-nasa/30' : 'text-space-400 hover:text-white'}`}><Globe className="w-4 h-4" /> Overview</button>
+            <button onClick={() => setViewMode('orbit')} className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'orbit' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'text-space-400 hover:text-white'}`}><Orbit className="w-4 h-4" /> Live Orbit</button>
+            <button onClick={() => setViewMode('presets')} className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'presets' ? 'bg-agency-spacex/20 text-agency-spacex border border-agency-spacex/30' : 'text-space-400 hover:text-white'}`}><LayoutDashboard className="w-4 h-4" /> Curated</button>
+            <button onClick={() => setViewMode('builder')} className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'builder' ? 'bg-space-600 text-white' : 'text-space-400 hover:text-white'}`}><BarChart3 className="w-4 h-4" /> Sandbox</button>
+            <button onClick={() => setViewMode('garage')} className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'garage' ? 'bg-agency-nasa/20 text-agency-nasa border border-agency-nasa/30' : 'text-space-400 hover:text-white'}`}><Rocket className="w-4 h-4" /> Garage</button>
+            <button onClick={() => setViewMode('table')} className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'table' ? 'bg-space-600 text-white' : 'text-space-400 hover:text-white'}`}><List className="w-4 h-4" /> Raw Data</button>
+          </div>
+            
+          <SpaceCommand onCommand={handleSpaceCommand} allData={allData} />
+        </div>
+      </header>
+
+      {/* Metrics (Minimalist Large KPI Layout) */}
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <motion.div variants={itemVariants}><MetricCard title="Total Launches" value={loading ? "..." : totalLaunches.toLocaleString()} icon={EqualizerIcon} color="text-cyan-400" /></motion.div>
+        <motion.div variants={itemVariants}><MetricCard title={selectedAgency ? "Selected Agency" : "Active Agencies"} value={loading ? "..." : (selectedAgency ? selectedAgency : uniqueAgenciesCount)} icon={NetworkNodesIcon} color="text-orange-400" /></motion.div>
+        <motion.div variants={itemVariants}><MetricCard title="Success Rate" value={loading ? "..." : `${successRate}%`} icon={Activity} color="text-agency-isro" /></motion.div>
+      </motion.div>
+
+      {/* Main Content Areas */}
+      <AnimatePresence mode="wait">
+        
+        {viewMode === 'table' && (
+          <motion.div key="table" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+            <DataTable data={allData} loading={loading} />
+          </motion.div>
+        )}
+
+        {viewMode === 'presets' && (
+          <motion.div key="presets" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+            <ErrorBoundary>
+              <CuratedDashboards allData={allData} loading={loading} />
+            </ErrorBoundary>
+          </motion.div>
+        )}
+
+        {viewMode === 'builder' && (
+          <motion.div key="builder" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+            <ChartBuilder allData={allData} loading={loading} commandConfig={commandConfig} />
+          </motion.div>
+        )}
+
+        {viewMode === 'garage' && (
+          <motion.div key="garage" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+            <RocketGarage allData={allData} />
+          </motion.div>
+        )}
+
+        {viewMode === 'orbit' && (
+          <motion.div key="orbit" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+            <LiveOrbitalMap allData={allData} onClose={() => setViewMode('dashboard')} />
+          </motion.div>
+        )}
+
+        {viewMode === 'dashboard' && (
+          <motion.div key="charts" variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 xl:grid-cols-12 gap-4 px-4 pb-12 auto-rows-auto grid-flow-row-dense">
+            
+            <div className="col-span-1 xl:col-span-12">
+              <LiveLaunchBanner />
+            </div>
+
+            {/* Row 1 */}
+            <motion.div variants={itemVariants} className="col-span-1 xl:col-span-8 glass-card p-4 h-[600px] flex flex-col">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-3xl font-display font-semibold text-white tracking-tight">Launches Over Time</h2>
+              </div>
+
+              <div className="flex-1 w-full">
+                {loading || !splashFinished ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={timeline} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#363A40" vertical={false} />
+                      <XAxis dataKey="year" stroke="#94A3B8" tickMargin={10} />
+                      <YAxis stroke="#94A3B8" tickMargin={10} />
+                      <RechartsTooltip content={<CustomMainTooltip />} wrapperStyle={{ zIndex: 1000 }} cursor={{ stroke: '#2A3052', strokeWidth: 2, fill: '#2A3052', fillOpacity: 0.1 }} />
+                      <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                      {Object.entries(AGENCY_COLORS).map(([agency, color]) => {
+                        if (selectedAgency && selectedAgency !== agency) return null;
+                        const isOther = agency === 'Other';
+                        return (
+                          <Line 
+                            key={agency}
+                            type="monotone" 
+                            dataKey={agency} 
+                            stroke={color} 
+                            strokeWidth={isOther ? 2 : 4} 
+                            dot={false} 
+                            activeDot={{ r: 8 }} 
+                            strokeDasharray={isOther ? "4 4" : undefined}
+                          />
+                        );
+                      })}
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+              <div className="mt-4">
+                {loading || !splashFinished ? <LoadingPlaceholder /> : <HistoricalTimeline AGENCY_COLORS={AGENCY_COLORS} />}
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="col-span-1 xl:col-span-4 glass-card p-4 h-[600px] flex flex-col">
+              {loading || !splashFinished ? <LoadingPlaceholder /> : <GeoMap allData={allData} loading={loading} />}
+            </motion.div>
+
+            {/* Row 2 */}
+            <motion.div variants={itemVariants} className="col-span-1 xl:col-span-4 glass-card p-4 h-[400px] flex flex-col">
+              <h2 className="text-xl font-display font-semibold text-white mb-2">Success vs Failure Volume</h2>
+                <div className="flex-1 w-full h-[350px]">
+                  {loading || !splashFinished ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={successTimeline} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#363A40" vertical={false} />
+                        <XAxis dataKey="year" stroke="#94A3B8" />
+                        <YAxis stroke="#94A3B8" />
+                        <RechartsTooltip content={<CustomMainTooltip />} wrapperStyle={{ zIndex: 1000 }} cursor={{ fill: '#2A3052', fillOpacity: 0.1 }} />
+                        <Legend />
+                        <Area type="monotone" dataKey="successful" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
+                        <Area type="monotone" dataKey="failed" stackId="1" stroke="#F43F5E" fill="#F43F5E" fillOpacity={0.3} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+            <motion.div variants={itemVariants} className="col-span-1 xl:col-span-4 glass-card p-4 h-[400px] flex flex-col">
+              <h2 className="text-xl font-display font-semibold text-white mb-2">Top 10 Rocket Workhorses</h2>
+                <div className="flex-1 w-full h-[350px]">
+                  {loading || !splashFinished ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={rockets} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#363A40" vertical={false} />
+                        <XAxis dataKey="rocket_type" stroke="#94A3B8" angle={-45} textAnchor="end" tick={{fontSize: 12}} height={60} />
+                        <YAxis yAxisId="left" stroke="#94A3B8" />
+                        <YAxis yAxisId="right" orientation="right" stroke="#10B981" domain={[0, 100]} tickFormatter={(val) => `${val}%`} />
+                        <RechartsTooltip content={<CustomMainTooltip />} wrapperStyle={{ zIndex: 1000 }} cursor={{ fill: '#2A3052', fillOpacity: 0.2 }} />
+                        <Legend verticalAlign="top" />
+                        <Bar yAxisId="left" dataKey="total_flown" name="Total Flights" radius={[4, 4, 0, 0]}>
+                          {rockets.map((entry, idx) => <Cell key={idx} fill={AGENCY_COLORS[entry.agency] || AGENCY_COLORS.Other} />)}
+                        </Bar>
+                        <Line yAxisId="right" type="monotone" dataKey={(d) => Math.round((d.success_count / d.total_flown) * 100)} name="Success Rate %" stroke="#10B981" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* 2. Maiden Flights Scatter */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-4 glass-card p-4 h-[400px] flex flex-col">
+                <h2 className="text-xl font-display font-semibold text-white mb-2">Maiden Flight Reliability</h2>
+                <p className="text-sm text-space-400 mb-6">Success or failure on a rocket family's very first launch</p>
+                <div className="flex-1 w-full h-[350px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={maidenFlightsData} margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#363A40" vertical={false} />
+                        <XAxis dataKey="agency" stroke="#94A3B8" />
+                        <YAxis stroke="#94A3B8" />
+                        <RechartsTooltip 
+                          cursor={{fill: '#2A3052', fillOpacity: 0.2}}
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-space-900 border border-space-600 p-4 rounded-xl shadow-2xl z-50">
+                                  <p className="text-white font-bold mb-2 border-b border-space-600/50 pb-2">{data.agency} Maiden Flights</p>
+                                  <div className="flex items-center justify-between gap-4 mb-1">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded-sm bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+                                      <span className="text-space-300">Success</span>
+                                    </div>
+                                    <span className="text-emerald-400 font-bold">{data.success}</span>
+                                  </div>
+                                  <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded-sm bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"></div>
+                                      <span className="text-space-300">Failure</span>
+                                    </div>
+                                    <span className="text-rose-400 font-bold">{data.failure}</span>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                        <Bar dataKey="success" name="Successful First Launch" stackId="a" fill="#10B981" radius={[0, 0, 4, 4]} />
+                        <Bar dataKey="failure" name="Failed First Launch" stackId="a" fill="#F43F5E" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+              
+              {/* 1. Global Monopoly TreeMap */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-6 glass-card p-4 h-[400px] flex flex-col">
+                <h2 className="text-xl font-display font-semibold text-white mb-2">The Global Monopoly</h2>
+                <p className="text-sm text-space-400 mb-6">Market share visualized by nation and sub-agency</p>
+                <div className="flex-1 w-full h-[400px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <Treemap
+                        data={treeMapData}
+                        dataKey="size"
+                        aspectRatio={4 / 3}
+                        stroke="#0F172A"
+                        fill="#268BD2"
+                        content={({ depth, x, y, width, height, name, ...props }) => {
+                          if (depth === 1) {
+                            return <rect x={x} y={y} width={width} height={height} fill="#0B101E" />;
+                          }
+                          if (depth === 2) {
+                            const { color, displayName } = props;
+                            
+                            // Dynamically scale font size relative to block width and height
+                            // Minimum 8px, Maximum 24px
+                            const fontSize = Math.max(8, Math.min(24, Math.min(width / (displayName.length * 0.6), height / 2)));
+                            const shouldShowText = width > 20 && height > 15; // Only hide if extremely tiny
+                            
+                            return (
+                              <g style={{ clipPath: `url(#clip-${name}-${x}-${y})` }}>
+                                <defs>
+                                  <clipPath id={`clip-${name}-${x}-${y}`}>
+                                    <rect x={x} y={y} width={width} height={height} />
+                                  </clipPath>
+                                </defs>
+                                <rect x={x} y={y} width={width} height={height} fill={color} stroke={color} strokeWidth={1} fillOpacity={0.15} />
+                                {shouldShowText && (
+                                  <text 
+                                    x={x + width / 2} 
+                                    y={y + height / 2 + (fontSize * 0.35)} 
+                                    textAnchor="middle" 
+                                    fill="#FFFFFF" 
+                                    fontSize={fontSize} 
+                                    fontWeight="800" 
+                                    className="font-display tracking-wide" 
+                                    style={{ textShadow: '0px 2px 6px rgba(0,0,0,0.9), 0px 0px 10px rgba(0,0,0,0.7)' }}
+                                  >
+                                    {displayName}
+                                  </text>
+                                )}
+                              </g>
+                            );
+                          }
+                          return null;
+                        }}
+                      >
+                        <RechartsTooltip content={<CustomMainTooltip />} />
+                      </Treemap>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* 7. Outcome Matrix (100% Stacked Bar) */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-6 glass-card p-4 h-[400px] flex flex-col">
+                <h2 className="text-xl font-display font-semibold text-white mb-2">Outcome Matrix</h2>
+                <p className="text-sm text-space-400 mb-6">Normalized 100% success rate comparison</p>
+                <div className="flex-1 w-full h-[350px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={outcomeBarData} layout="vertical" margin={{ top: 20, right: 30, left: 120, bottom: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={true} vertical={false} />
+                        <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} stroke="#94A3B8" />
+                        <YAxis type="category" dataKey="agency" stroke="#94A3B8" width={80} />
+                        <RechartsTooltip content={<CustomOutcomeTooltip />} cursor={{ fill: '#1E293B', opacity: 0.4 }} />
+                        <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                        <Bar dataKey="Success" stackId="a" fill="#10B981" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Partial" stackId="a" fill="#F59E0B" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Failure" stackId="a" fill="#EF4444" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Unknown" stackId="a" fill="#64748B" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* 4. Streamgraph */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-8 glass-card p-4 h-[400px] flex flex-col">
+                <h2 className="text-xl font-display font-semibold text-white mb-2">Decade-by-Decade Dominance</h2>
+                <p className="text-sm text-space-400 mb-6">Historical launch volume shaped as a geopolitical streamgraph</p>
+                <div className="flex-1 w-full h-[350px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={timeline} margin={{ top: 20, right: 30, left: 0, bottom: 0 }} stackOffset="silhouette">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#363A40" vertical={false} />
+                        <XAxis dataKey="year" stroke="#94A3B8" />
+                        <YAxis hide />
+                        <RechartsTooltip content={<CustomMainTooltip />} cursor={{ stroke: '#fff', strokeWidth: 1, strokeOpacity: 0.2 }} />
+                        <Legend />
+                        {Object.entries(AGENCY_COLORS).map(([agency, color]) => (
+                           <Area key={agency} type="monotone" dataKey={agency} stackId="1" stroke={color} fill={color} fillOpacity={0.8} />
+                        ))}
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* 3. Diverging Fleet Bar */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-4 glass-card p-4 h-[400px] flex flex-col">
+                <h2 className="text-xl font-display font-semibold text-white mb-2">Fleet Graveyard vs Vanguard</h2>
+                <p className="text-sm text-space-400 mb-6">Retired rocket families (Left) vs Currently active fleets (Right)</p>
+                <div className="flex-1 w-full h-[350px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={divergingFleetData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }} stackOffset="sign">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#2A3052" horizontal={true} vertical={false} />
+                        <XAxis type="number" stroke="#94A3B8" />
+                        <YAxis dataKey="agency" type="category" stroke="#94A3B8" width={80} />
+                        <RechartsTooltip cursor={{fill: '#2A3052', fillOpacity: 0.2}} content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                               <div className="bg-space-900 border border-space-600 p-3 rounded-xl shadow-xl">
+                                 <p className="text-white font-bold">{payload[0].payload.agency}</p>
+                                 <p className="text-emerald-400 text-sm">Active Fleet: {payload[0].payload.active}</p>
+                                 <p className="text-rose-400 text-sm">Retired Fleet: {Math.abs(payload[0].payload.retired)}</p>
+                               </div>
+                            );
+                          }
+                          return null;
+                        }} />
+                        <Legend />
+                        <Bar dataKey="retired" name="Retired" fill="#F43F5E" stackId="stack" radius={[4, 0, 0, 4]} />
+                        <Bar dataKey="active" name="Active" fill="#10B981" stackId="stack" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+
+
+              {/* 5. Space Ecosystem Flow (Nested Sunburst) */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-8 glass-card p-4 h-[400px] flex flex-col items-center">
+                <h2 className="text-xl font-display font-semibold text-white mb-2 w-full text-left">The Space Ecosystem Hierarchy</h2>
+                <p className="text-sm text-space-400 mb-6 w-full text-left">Interactive flow from State (Inner) ΓåÆ Agency (Middle) ΓåÆ Rocket Family (Outer)</p>
+                <div className="flex-1 w-full h-[300px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <RechartsTooltip content={<CustomMainTooltip />} />
+                        <Pie data={ecoSunburstState} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius="35%" fill="#1E293B" stroke="#0F172A" strokeWidth={2}>
+                          {ecoSunburstState.map((entry, index) => <Cell key={`cell-${index}`} fill={STATE_PALETTES[entry.name]?.[0] || STATE_PALETTES['Unknown'][0]} />)}
+                        </Pie>
+                        <Pie data={ecoSunburstAgency} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius="40%" outerRadius="65%" fill="#1E293B" stroke="#0F172A" strokeWidth={2}>
+                          {ecoSunburstAgency.map((entry, index) => <Cell key={`cell-${index}`} fill={STATE_PALETTES[entry.state]?.[1] || STATE_PALETTES['Unknown'][1]} />)}
+                        </Pie>
+                        <Pie data={ecoSunburstRocket} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius="70%" outerRadius="90%" fill="#1E293B" stroke="#0F172A" strokeWidth={2}>
+                          {ecoSunburstRocket.map((entry, index) => <Cell key={`cell-${index}`} fill={STATE_PALETTES[entry.state]?.[2] || STATE_PALETTES['Unknown'][2]} />)}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* 5. Agency DNA Profile */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-4 glass-card p-4 h-[400px] flex flex-col items-center justify-center relative">
+                <div className="absolute top-6 left-6 text-left">
+                  <h2 className="text-xl font-display font-semibold text-white mb-2">Agency DNA Profile</h2>
+                  <p className="text-sm text-space-400">Relative strategies of the top 5 global players (normalized to 100%)</p>
+                </div>
+                <div className="w-full h-[400px] mt-10">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                        <PolarGrid stroke="#2A3052" />
+                        <PolarAngleAxis dataKey="metric" tick={{ fill: '#94A3B8', fontSize: 14 }} />
+                        <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#2A3052" tick={false} axisLine={false} />
+                        <Radar name="SpaceX" dataKey="SpaceX" stroke={AGENCY_COLORS['SpaceX']} fill={AGENCY_COLORS['SpaceX']} fillOpacity={0.2} />
+                        <Radar name="NASA" dataKey="NASA" stroke={AGENCY_COLORS['NASA']} fill={AGENCY_COLORS['NASA']} fillOpacity={0.2} />
+                        <Radar name="Roscosmos" dataKey="Roscosmos" stroke={AGENCY_COLORS['Roscosmos']} fill={AGENCY_COLORS['Roscosmos']} fillOpacity={0.2} />
+                        <Radar name="CASC" dataKey="CASC" stroke="#EF4444" fill="#EF4444" fillOpacity={0.2} />
+                        <Radar name="ISRO" dataKey="ISRO" stroke={AGENCY_COLORS['ISRO']} fill={AGENCY_COLORS['ISRO']} fillOpacity={0.2} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        <RechartsTooltip contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: '#334155', borderRadius: '12px' }} itemStyle={{ color: '#E2E8F0' }} />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* 6. Rocket Lifespans (Gantt via Custom BarChart) */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-8 glass-card p-4 h-[400px] flex flex-col">
+                <h2 className="text-xl font-display font-semibold text-white mb-2">Eras of the Vanguard Fleets</h2>
+                <p className="text-sm text-space-400 mb-6">Lifespans of the top 15 most flown orbital rockets in history</p>
+                <div className="flex-1 w-full h-[300px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={ganttData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#2A3052" horizontal={true} vertical={false} />
+                        <XAxis type="number" domain={[1950, 2030]} stroke="#94A3B8" tickFormatter={val => val.toString()} />
+                        <YAxis dataKey="rocket" type="category" stroke="#94A3B8" width={150} interval={0} tick={{fontSize: 12}} />
+                        <RechartsTooltip 
+                          cursor={{fill: '#2A3052', fillOpacity: 0.2}}
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const d = payload[0].payload;
+                              return (
+                                <div className="bg-space-900 border border-space-600 p-4 rounded-xl shadow-2xl z-50">
+                                  <p className="font-bold text-white mb-1">{d.rocket}</p>
+                                  <p className="text-space-300 text-sm">Agency: {d.agency}</p>
+                                  <p className="text-space-300 text-sm">Active Era: {d.range[0]} - {d.range[1]}</p>
+                                  <p className="text-space-300 text-sm">Total Flights: {d.total}</p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Bar dataKey="range" radius={[4, 4, 4, 4]}>
+                          {ganttData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={AGENCY_COLORS[entry.agency] || AGENCY_COLORS.Other} fillOpacity={0.8} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* 8. Decades of Dominance (Bump Chart) */}
+              <motion.div variants={itemVariants} className="col-span-1 xl:col-span-4 glass-card p-4 h-[400px] flex flex-col">
+                <h2 className="text-xl font-display font-semibold text-white mb-2">Agency Dominance Rank</h2>
+                <p className="text-sm text-space-400 mb-6">Historical ranking by total launch volume across decades</p>
+                <div className="flex-1 w-full h-[350px]">
+                  {loading ? <LoadingPlaceholder /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={bumpChartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                        <XAxis dataKey="decade" stroke="#94A3B8" />
+                        <YAxis stroke="#94A3B8" reversed={true} domain={[1, 7]} ticks={[1, 2, 3, 4, 5, 6, 7]} />
+                        <RechartsTooltip content={<CustomBumpTooltip />} cursor={{ stroke: '#334155', strokeWidth: 2 }} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        <Line type="monotone" dataKey="Roscosmos" stroke={AGENCY_COLORS['Roscosmos']} strokeWidth={4} connectNulls={false} activeDot={{ r: 8 }} />
+                        <Line type="monotone" dataKey="NASA" stroke={AGENCY_COLORS['NASA']} strokeWidth={4} connectNulls={false} activeDot={{ r: 8 }} />
+                        <Line type="monotone" dataKey="CASC" stroke={AGENCY_COLORS['CASC']} strokeWidth={4} connectNulls={false} activeDot={{ r: 8 }} />
+                        <Line type="monotone" dataKey="SpaceX" stroke={AGENCY_COLORS['SpaceX']} strokeWidth={4} connectNulls={false} activeDot={{ r: 8 }} />
+                        <Line type="monotone" dataKey="ESA" stroke={AGENCY_COLORS['ESA']} strokeWidth={4} connectNulls={false} activeDot={{ r: 8 }} />
+                        <Line type="monotone" dataKey="ISRO" stroke={AGENCY_COLORS['ISRO']} strokeWidth={4} connectNulls={false} activeDot={{ r: 8 }} />
+                        <Line type="monotone" dataKey="Other" stroke={AGENCY_COLORS['Other']} strokeWidth={4} connectNulls={false} activeDot={{ r: 8 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </motion.div>
+            
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Satellite Description Modal */}
+      <AnimatePresence>
+        {selectedMission && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-space-900/80 backdrop-blur-sm"
+            onClick={() => setSelectedMission(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-space-800 border border-space-600 rounded-2xl p-8 max-w-lg w-full shadow-2xl relative"
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                className="absolute top-4 right-4 p-2 text-space-400 hover:text-white bg-space-700/50 hover:bg-space-700 rounded-full transition-colors"
+                onClick={() => setSelectedMission(null)}
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="flex items-center gap-3 mb-6">
+                <Satellite className={`w-8 h-8 text-agency-${selectedMission.agency.toLowerCase()} ${AGENCY_COLORS[selectedMission.agency] ? '' : 'text-agency-other'}`} />
+                <div>
+                  <h3 className="text-2xl font-display font-bold text-white">{selectedMission.mission}</h3>
+                  <p className="text-space-400">{selectedMission.display_agency} ΓÇó {selectedMission.year}</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="bg-space-900/50 p-4 rounded-xl border border-space-600/50">
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    This is the <span className="text-white font-semibold">{selectedMission.mission}</span> mission, 
+                    launched in <span className="text-white font-semibold">{selectedMission.year}</span> by 
+                    <span className="text-white font-semibold"> {selectedMission.display_agency}</span>. 
+                    It flew aboard a <span className="text-white font-semibold">{selectedMission.rocket_type}</span> rocket.
+                  </p>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 bg-space-900/50 rounded-xl border border-space-600/50">
+                  <span className="text-sm text-space-400">Mission Status</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedMission.is_success === 1 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                  }`}>
+                    {selectedMission.success_status}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MetricCard({ title, value, icon: Icon, color }) {
+  return (
+    <div className="glass-card p-8 flex items-start justify-between group hover:border-space-600 hover:-translate-y-2 transition-all duration-300 h-full shadow-lg">
+      <div>
+        <p className="text-space-400 text-sm md:text-base font-medium mb-2 uppercase tracking-wide">{title}</p>
+        <h3 className="text-4xl md:text-5xl font-display font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-400 transition-all">
+          {value}
+        </h3>
+      </div>
+      <div className={`p-4 rounded-xl bg-space-800 border border-space-600/50 ${color}`}>
+        <Icon className="w-8 h-8" />
+      </div>
+    </div>
+  );
+}
+
+function LoadingPlaceholder() {
+  return <div className="w-full h-full flex items-center justify-center text-space-400">Loading Chart...</div>;
+}

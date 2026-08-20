@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 14: Polar Telemetry Calibration</title>
+<style>
+  body { margin: 0; background: #0c1015; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; font-family: monospace; }
+  .grid { width: 300px; height: 300px; position: relative; }
+  svg { width: 100%; height: 100%; }
+  .circle-grid { fill: none; stroke: #334155; stroke-width: 1; opacity: 0; animation: fade 1s forwards; }
+  .c1 { animation-delay: 0.2s; } .c2 { animation-delay: 0.4s; } .c3 { animation-delay: 0.6s; }
+  
+  .axis { stroke: #475569; stroke-width: 1; stroke-dasharray: 400; stroke-dashoffset: 400; animation: draw 1s 0.8s ease-out forwards; }
+  .data-line { fill: none; stroke: #38bdf8; stroke-width: 2; stroke-dasharray: 600; stroke-dashoffset: 600; animation: draw 2s 1.5s ease-out forwards; }
+  
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fade { to { opacity: 1; } }
+  
+  .readout { position: absolute; bottom: -40px; width: 100%; text-align: center; color: #94A3B8; opacity: 0; animation: fade 0.5s 3s forwards; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <svg viewBox="0 0 300 300">
+      <circle cx="150" cy="150" r="140" class="circle-grid c3" />
+      <circle cx="150" cy="150" r="100" class="circle-grid c2" />
+      <circle cx="150" cy="150" r="60" class="circle-grid c1" />
+      
+      <line x1="150" y1="10" x2="150" y2="290" class="axis" />
+      <line x1="10" y1="150" x2="290" y2="150" class="axis" />
+      <line x1="51" y1="51" x2="249" y2="249" class="axis" />
+      <line x1="51" y1="249" x2="249" y2="51" class="axis" />
+      
+      <!-- Polar data shape -->
+      <path class="data-line" d="M 150 50 L 220 100 L 250 150 L 190 230 L 150 250 L 90 200 L 50 150 L 110 80 Z" />
+    </svg>
+    <div class="readout">CALIBRATING SENSORS</div>
+  </div>
+</body>
+</html>

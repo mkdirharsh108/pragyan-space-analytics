@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 10: Ascent Profile</title>
+<style>
+  body { margin: 0; background: #0a0a0a; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: sans-serif; }
+  .chart { width: 300px; height: 200px; border-left: 2px solid #444; border-bottom: 2px solid #444; position: relative; }
+  .line {
+    fill: none; stroke: #fff; stroke-width: 3;
+    stroke-dasharray: 1000; stroke-dashoffset: 1000;
+    animation: drawLine 2s ease-in forwards;
+  }
+  @keyframes drawLine { to { stroke-dashoffset: 0; } }
+  .text { color: #fff; margin-top: 30px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <div class="chart">
+    <svg viewBox="0 0 300 200" style="width:100%; height:100%; position:absolute; bottom:0; left:0; transform: scaleY(-1);">
+      <path class="line" d="M 0 0 C 100 0, 150 150, 300 180" />
+    </svg>
+  </div>
+  <div class="text">Max Q Approaching</div>
+</body>
+</html>

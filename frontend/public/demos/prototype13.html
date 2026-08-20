@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 13: Ground Track Projection</title>
+<style>
+  body {
+    margin: 0; overflow: hidden; background-color: #0f172a;
+    background-image: linear-gradient(#1e293b 1px, transparent 1px), linear-gradient(90deg, #1e293b 1px, transparent 1px);
+    background-size: 50px 50px; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;
+  }
+  .map-box { width: 600px; height: 300px; border: 1px solid #334155; position: relative; }
+  svg { width: 100%; height: 100%; }
+  
+  .equator { stroke: #334155; stroke-width: 1; stroke-dasharray: 5; }
+  .coastline { fill: none; stroke: #475569; stroke-width: 1; opacity: 0; animation: fadeMap 1s 0.5s forwards; }
+  .orbit {
+    fill: none; stroke: #38bdf8; stroke-width: 2;
+    stroke-dasharray: 1000; stroke-dashoffset: 1000;
+    animation: drawOrbit 3s 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
+  
+  @keyframes fadeMap { to { opacity: 1; } }
+  @keyframes drawOrbit { to { stroke-dashoffset: 0; } }
+  
+  .target { width: 8px; height: 8px; background: #38bdf8; border-radius: 50%; position: absolute; top: 120px; left: 450px; opacity: 0; animation: ping 1s 4s infinite; box-shadow: 0 0 10px #38bdf8; }
+  @keyframes ping { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
+</style>
+</head>
+<body>
+  <div class="map-box">
+    <svg viewBox="0 0 600 300">
+      <line x1="0" y1="150" x2="600" y2="150" class="equator" />
+      
+      <!-- Abstract Continents -->
+      <path class="coastline" d="M 50 50 Q 100 20 150 80 T 250 100 T 200 250 T 100 200 Z" />
+      <path class="coastline" d="M 300 30 Q 400 10 450 100 T 550 150 T 500 280 T 350 250 Z" />
+      
+      <!-- Sine Wave Orbit Path -->
+      <path class="orbit" d="M 0 150 Q 75 0 150 150 T 300 150 T 450 150 T 600 150" />
+    </svg>
+    <div class="target"></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 3: Stark Telemetry</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #050505;
+    color: #fff;
+    font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    background-image: linear-gradient(#333 2px, transparent 2px), linear-gradient(90deg, #333 2px, transparent 2px);
+    background-size: calc(33.333% + 1px) calc(33.333% + 1px);
+    overflow: hidden;
+  }
+  .cell {
+    background-color: #050505;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cell::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: flash 2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+  @keyframes flash {
+    0% { transform: scaleX(0); transform-origin: left; }
+    20% { transform: scaleX(1); transform-origin: left; }
+    21% { transform: scaleX(1); transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+  }
+  
+  .label {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeIn 0.5s 1s forwards;
+  }
+  .value {
+    font-size: 5vw;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    opacity: 0;
+    animation: fadeIn 0.5s 1s forwards;
+  }
+  .accent {
+    color: #ff4f00; /* Aerospace Orange */
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  .title-cell {
+    grid-column: 1 / 4;
+    align-items: center;
+    text-align: center;
+  }
+  .title-cell h1 {
+    font-size: 4vw;
+    letter-spacing: 10px;
+    margin: 0;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s forwards;
+  }
+</style>
+</head>
+<body>
+  
+  <div class="cell" style="animation-delay: 0.1s">
+    <div class="label">Total Missions</div>
+    <div class="value" id="counter1">0</div>
+  </div>
+  <div class="cell" style="animation-delay: 0.2s">
+    <div class="label">Success Rate</div>
+    <div class="value accent" id="counter2">0.0%</div>
+  </div>
+  <div class="cell" style="animation-delay: 0.3s">
+    <div class="label">Data Points</div>
+    <div class="value" id="counter3">0</div>
+  </div>
+  
+  <div class="cell title-cell" style="animation-delay: 0.4s">
+    <h1>Global Mission Control</h1>
+  </div>
+  
+  <div class="cell" style="animation-delay: 0.5s">
+    <div class="label">Active Agencies</div>
+    <div class="value" id="counter4">0</div>
+  </div>
+  <div class="cell" style="animation-delay: 0.6s">
+    <div class="label">Orbital Assets</div>
+    <div class="value" id="counter5">0</div>
+  </div>
+  <div class="cell" style="animation-delay: 0.7s">
+    <div class="label">System Status</div>
+    <div class="value accent" style="font-size: 3vw;">NOMINAL</div>
+  </div>
+
+  <script>
+    function animateValue(id, start, end, duration, format) {
+      const obj = document.getElementById(id);
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 4); // easeOutQuart
+        const current = start + easeProgress * (end - start);
+        obj.innerHTML = format(current);
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      // Delay start to match CSS
+      setTimeout(() => window.requestAnimationFrame(step), 1000);
+    }
+    
+    animateValue("counter1", 0, 11342, 2000, (v) => Math.floor(v).toLocaleString());
+    animateValue("counter2", 0, 94.2, 2500, (v) => v.toFixed(1) + "%");
+    animateValue("counter3", 0, 893450, 2200, (v) => Math.floor(v).toLocaleString());
+    animateValue("counter4", 0, 64, 1500, (v) => Math.floor(v));
+    animateValue("counter5", 0, 850, 1800, (v) => Math.floor(v));
+  </script>
+</body>
+</html>

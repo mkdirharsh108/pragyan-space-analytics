@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 11: Satellite Schematic</title>
+<style>
+  body {
+    margin: 0; overflow: hidden; background-color: #0B1120;
+    background-image: linear-gradient(#1E293B 1px, transparent 1px), linear-gradient(90deg, #1E293B 1px, transparent 1px);
+    background-size: 40px 40px; font-family: "SF Pro Display", sans-serif;
+    color: #E2E8F0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;
+  }
+  .container { width: 400px; height: 300px; position: relative; }
+  svg { width: 100%; height: 100%; }
+  .path {
+    fill: none; stroke: #38BDF8; stroke-width: 1.5;
+    stroke-dasharray: 2000; stroke-dashoffset: 2000;
+    animation: draw 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .path-delay-1 { animation-delay: 1s; stroke: #94A3B8; }
+  .path-delay-2 { animation-delay: 1.5s; stroke: #F8FAFC; }
+  
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .text-box {
+    margin-top: 20px; text-align: center; font-family: monospace;
+    letter-spacing: 3px; font-size: 14px; text-transform: uppercase;
+    opacity: 0; animation: fade 0.5s 2.5s forwards;
+  }
+  @keyframes fade { to { opacity: 1; } }
+</style>
+</head>
+<body>
+  <div class="container">
+    <svg viewBox="0 0 400 300">
+      <!-- Grid Crosshairs -->
+      <path class="path" d="M 200 0 L 200 300 M 0 150 L 400 150" style="stroke: #334155; stroke-dasharray: 5 5; stroke-dashoffset: 0; animation: none;" />
+      
+      <!-- Satellite Body -->
+      <rect x="170" y="110" width="60" height="80" class="path" />
+      <path d="M 180 110 L 190 90 L 210 90 L 220 110" class="path" />
+      <circle cx="200" cy="150" r="15" class="path path-delay-1" />
+      
+      <!-- Solar Panels Left -->
+      <path d="M 170 140 L 50 140 L 50 160 L 170 160 Z" class="path path-delay-2" />
+      <path d="M 90 140 L 90 160 M 130 140 L 130 160" class="path path-delay-2" />
+      
+      <!-- Solar Panels Right -->
+      <path d="M 230 140 L 350 140 L 350 160 L 230 160 Z" class="path path-delay-2" />
+      <path d="M 270 140 L 270 160 M 310 140 L 310 160" class="path path-delay-2" />
+      
+      <!-- Antenna -->
+      <path d="M 200 90 L 200 40" class="path path-delay-1" />
+      <path d="M 185 55 C 200 40 215 55 215 55" class="path path-delay-1" />
+    </svg>
+  </div>
+  <div class="text-box">
+    Deploying Payload <br> <span style="color:#38BDF8; font-size:12px;">SYSTEM_NOMINAL</span>
+  </div>
+</body>
+</html>

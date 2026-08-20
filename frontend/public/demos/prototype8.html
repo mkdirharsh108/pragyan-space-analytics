@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 8: Geopolitical Grid</title>
+<style>
+  body { margin: 0; background: #111; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; overflow: hidden; }
+  .map-grid { display: grid; grid-template-columns: repeat(15, 20px); gap: 2px; }
+  .box { width: 20px; height: 20px; background: #222; opacity: 0; animation: popup 0.5s forwards; }
+  .active { background: #fff; box-shadow: 0 0 10px #fff; }
+  .text { color: #888; letter-spacing: 2px; text-transform: uppercase; margin-top: 30px; }
+  @keyframes popup { to { opacity: 1; } }
+</style>
+</head>
+<body>
+  <div class="map-grid" id="mg"></div>
+  <div class="text">Mapping Agencies...</div>
+  <script>
+    const mg = document.getElementById('mg');
+    for(let i=0; i<150; i++) {
+      let b = document.createElement('div');
+      b.className = 'box';
+      b.style.animationDelay = (Math.random() * 1.5) + 's';
+      if(Math.random() > 0.85) {
+        setTimeout(() => b.classList.add('active'), Math.random() * 2000 + 1000);
+      }
+      mg.appendChild(b);
+    }
+  </script>
+</body>
+</html>

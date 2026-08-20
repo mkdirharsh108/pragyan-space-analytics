@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 4: Orbital Mechanics</title>
+<style>
+  body {
+    margin: 0; background: #000; height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; overflow: hidden;
+  }
+  .orbit {
+    width: 300px; height: 150px;
+    border: 2px dashed #444; border-radius: 50%;
+    position: relative;
+    animation: rotateOrbit 10s linear infinite;
+  }
+  .satellite {
+    width: 10px; height: 10px; background: #fff;
+    border-radius: 50%; position: absolute;
+    top: -5px; left: 145px;
+    box-shadow: 0 0 10px #fff;
+  }
+  .planet {
+    width: 40px; height: 40px; background: #222;
+    border-radius: 50%; position: absolute;
+    top: 55px; left: 130px;
+  }
+  .text {
+    color: #fff; letter-spacing: 4px; text-transform: uppercase;
+    margin-top: 60px; font-weight: 300; opacity: 0;
+    animation: fade 2s 1s forwards;
+  }
+  @keyframes rotateOrbit { 100% { transform: rotate(360deg); } }
+  @keyframes fade { to { opacity: 1; } }
+</style>
+</head>
+<body>
+  <div class="orbit">
+    <div class="planet"></div>
+    <div class="satellite"></div>
+  </div>
+  <div class="text">Calculating Trajectories</div>
+</body>
+</html>

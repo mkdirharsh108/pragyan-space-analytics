@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo A: The Sling-Shot (Parallax Speed)</title>
+<style>
+  body { margin: 0; overflow: hidden; background-color: #0c1015; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+  
+  /* Parallax Stars Background */
+  .stars {
+    position: absolute;
+    top: -100vh; left: 0; right: 0; height: 200vh;
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: stars-fall 0.2s linear infinite;
+    opacity: 0;
+    will-change: transform;
+  }
+  
+  .stars-layer-2 {
+    background-size: 300px 300px;
+    animation: stars-fall 0.4s linear infinite;
+    opacity: 0;
+  }
+
+  /* Rocket Container */
+  .rocket-container {
+    width: 200px; height: 400px; position: relative; z-index: 10;
+    will-change: transform;
+    animation: rocket-rumble 0.05s infinite alternate, rocket-launch 4s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+  }
+
+  .flame {
+    fill: #f97316;
+    transform-origin: top center;
+    animation: flame-flicker 0.05s infinite alternate;
+  }
+
+  .text {
+    position: absolute; bottom: 20%; color: white; font-size: 24px; letter-spacing: 4px;
+    font-weight: bold; opacity: 0; animation: fade 4s forwards;
+  }
+
+  @keyframes stars-fall {
+    from { transform: translateY(0); }
+    to { transform: translateY(200px); }
+  }
+  
+  /* Fade the stars in as it accelerates */
+  @keyframes stars-opacity {
+    0% { opacity: 0; }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes rocket-launch {
+    0% { transform: translateY(100vh); }
+    20% { transform: translateY(0); }
+    80% { transform: translateY(0); }
+    100% { transform: translateY(-100vh); }
+  }
+
+  @keyframes rocket-rumble {
+    from { margin-left: -2px; margin-top: -1px; }
+    to { margin-left: 2px; margin-top: 1px; }
+  }
+
+  @keyframes flame-flicker {
+    from { transform: scaleY(1); opacity: 0.8; }
+    to { transform: scaleY(2); opacity: 1; }
+  }
+
+  @keyframes fade {
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="stars" style="animation-name: stars-fall, stars-opacity; animation-duration: 0.2s, 4s;"></div>
+  <div class="stars stars-layer-2" style="animation-name: stars-fall, stars-opacity; animation-duration: 0.4s, 4s;"></div>
+  
+  <div class="rocket-container">
+    <svg viewBox="0 0 100 250" style="width: 100%; height: 100%;">
+      <path class="flame" d="M 42 195 L 50 240 L 58 195 Z" />
+      <path d="M 50 10 C 35 40 35 100 35 140 L 20 170 L 35 170 L 35 180 L 65 180 L 65 170 L 80 170 L 65 140 C 65 100 65 40 50 10 Z" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+      <path d="M 40 180 L 40 195 L 60 195 L 60 180" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+      <circle cx="50" cy="60" r="6" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+      <circle cx="50" cy="90" r="6" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+    </svg>
+  </div>
+  <div class="text">LIFTOFF</div>
+</body>
+</html>
